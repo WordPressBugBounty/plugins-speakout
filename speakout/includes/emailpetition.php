@@ -133,26 +133,11 @@ function dk_speakout_emailpetition_shortcode( $attr ) {
             $expired = ( $petition->expires == 1 && current_time( 'timestamp' ) >= strtotime( $petition->expiration_date ) ) ? 1 : 0;
 
             // shortcode attributes
-            $width = isset( $attr[ 'width' ] ) ? 'style="width: ' . $attr[ 'width' ] . ';"': '';
-            $height = isset( $attr[ 'height' ] ) ? 'style="height: ' . $attr[ 'height' ] . ' !important;"': '';
-            $css_classes = isset( $attr[ 'class' ] ) ? $css_classes = $attr[ 'class' ] : '';
+			$width = isset( $attr['width'] ) && preg_match( '/^\d+(px|%)?$/', $attr['width'] ) ? 'style="width: ' . esc_attr( $attr['width'] ) . ';"' : '';
+			$height = isset( $attr['height'] ) && preg_match( '/^\d+(px|%)?$/', $attr['height'] ) ? 'style="height: ' . esc_attr( $attr['height'] ) . ';"' : '';
+            $css_classes = isset( $attr[ 'class' ] ) ? $css_classes = esc_attr($attr[ 'class' ]) : '';
             $progress_width = ( $options[ 'petition_theme' ] == 'basic' ) ? 300 : 200; // defaults
-            $progress_width = isset( $attr[ 'progresswidth' ] ) ? $attr[ 'progresswidth' ] : $progress_width;
-            
-            // Function to detect potential JavaScript in shorcode
-            function contains_js($input) {
-                $pattern = '/(javascript|on\w+|<script|<\/script|<\?|<\w+[^>]*\s*on\w+\s*=\s*["\']?[^>"\']+["\']?)/i';
-                return preg_match($pattern, $input);
-            }
-
-            // Validate and sanitize shortcode attributes
-            if (isset( $attr['width']) && contains_js($attr['width']) || 
-                isset( $attr['height']) && contains_js($attr['height']) || 
-                isset( $attr['css_classes']) && contains_js($attr['css_classes']  ) || 
-                isset( $attr['progresswidth']) && contains_js($attr['progresswidth'])) {
-                // Handle potential injection attempt
-                die('Invalid javascript detected in shortcode');
-            }
+            $progress_width = isset( $attr[ 'progresswidth' ] ) ? esc_attr( $attr[ 'progresswidth' ] ): $progress_width;         
 
             if ( !$expired ) {
                 $userdata = dk_speakout_SpeakOut::userinfo();

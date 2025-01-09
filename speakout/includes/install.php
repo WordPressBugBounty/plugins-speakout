@@ -231,7 +231,7 @@ function dk_speakout_install() {
         "g_recaptcha_status"    => "",
         "g_recaptcha_site_key"  => "",
         "hcaptcha_status"       => "",
-        "hcaptcha__site_key"    => "",
+        "hcaptcha_site_key"     => "",
         "hcaptcha_secret_key"   => "",
         "anedot_page_id"        => "",
         "anedot_embed_pref"     => "",

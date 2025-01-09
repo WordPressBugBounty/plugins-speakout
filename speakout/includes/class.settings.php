@@ -115,11 +115,11 @@ class dk_speakout_Settings
 		$this->privacypolicy_url        	= $options['privacypolicy_url'];
         $this->g_recaptcha_version          = $options['g_recaptcha_version'];
 		$this->g_recaptcha_status           = $options['g_recaptcha_status'];
-		$this->g_recaptcha_site_key           = $options['g_recaptcha_site_key'];
-		$this->g_recaptcha_secret_key         = $options['g_recaptcha_secret_key'];
+		$this->g_recaptcha_site_key         = $options['g_recaptcha_site_key'];
+		$this->g_recaptcha_secret_key       = $options['g_recaptcha_secret_key'];
 		$this->hcaptcha_status           	= $options['hcaptcha_status'];
-		$this->hcaptcha_site_key           = $options['hcaptcha_site_key'];
-		$this->hcaptcha_secret_key         = $options['hcaptcha_secret_key'];
+		$this->hcaptcha_site_key            = $options['hcaptcha_site_key'];
+		$this->hcaptcha_secret_key          = $options['hcaptcha_secret_key'];
 		$this->display_anedot               = $options['display_anedot'];
 		$this->display_sharing              = $options['display_sharing'];
 		$this->display_honorific      		= $options['display_honorific'];
