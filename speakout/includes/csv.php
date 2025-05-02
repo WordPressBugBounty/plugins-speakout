@@ -68,7 +68,7 @@ if ( isset( $_REQUEST['csv'] ) && $_REQUEST['csv'] == 'signatures' ) {
         $email_optin    = __( 'Email Opt-in', 'speakout' );
 		$date           = __( 'Date Signed', 'speakout' );
         $confirmation_code      = __( 'Confirmation code', 'speakout' );
-		$confirmed      = __( 'Confirmed', 'speakout' );
+		$is_confirmed      = __( 'Confirmed', 'speakout' );
         $custom_message = __( 'Custom Message', 'speakout' );
         $language       = __( 'Language', 'speakout' );
         $IP_address     = __( 'IP Address', 'speakout' );
@@ -92,7 +92,7 @@ if ( isset( $_REQUEST['csv'] ) && $_REQUEST['csv'] == 'signatures' ) {
 
 		// construct CSV file header row
 		// must use double quotes and separate with tabs    
-		$csv = "Signature ID,$petitions_id,$honorific,$firstname,$lastname,$email,$street,$city,$state,$postcode,$country,$custom_field1,$custom_field2,$custom_field3,$custom_field4,$custom_field5,$custom_field6,$custom_field7,$email_optin,$date,$confirmation_code,$confirmed,$custom_message,$language,$IP_address,$anonymise";
+		$csv = "Signature ID,$petitions_id,$honorific,$firstname,$lastname,$email,$street,$city,$state,$postcode,$country,$custom_field1,$custom_field2,$custom_field3,$custom_field4,$custom_field5,$custom_field6,$custom_field7,$email_optin,$date,$confirmation_code,$is_confirmed,$custom_message,$language,$IP_address,$anonymise";
 		$csv .= "\n";
 
 		// construct CSV file data rows
@@ -103,7 +103,7 @@ if ( isset( $_REQUEST['csv'] ) && $_REQUEST['csv'] == 'signatures' ) {
 			trim($signature->petitions_id) . '","' . 
 			trim($signature->honorific) . '","' . 
 			trim($signature->first_name) . '","' . 
-			trim($signature->last_name) . $anonName . '","' . 
+			trim($signature->last_name) . $anonymise . '","' . 
 			trim($signature->email) . '","' . 
 			trim($signature->street_address) . '","' . 
 			trim($signature->city) . '","' . 

@@ -10,12 +10,12 @@ Author URI: https://SpeakOutPetitions.com
 Text Domain: speakout
 Domain Path: /languages
 Requires at least: 5.0
-Tested up to: 6.7
+Tested up to: 6.8
 Requires PHP: 7.4
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Version: 4.5.0
+Version: 4.5.2
 
 {Plugin Name} is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ For the full text of the GNU General Public License see {License URI}.
 */
 
 global $wpdb, $db_petitions, $db_signatures, $dk_speakout_version;
-$dk_speakout_version = '4.5.0';
+$dk_speakout_version = '4.5.2';
 $db_petitions  = $wpdb->prefix . 'dk_speakout_petitions';
 $db_signatures = $wpdb->prefix . 'dk_speakout_signatures';
 

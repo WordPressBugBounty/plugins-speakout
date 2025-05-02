@@ -1,10 +1,10 @@
 === SpeakOut! Email Petitions ===
-Contributors: 123host
+Contributors: 123host, speakoutpetitions
 Tags: petition, activism, community, email, social media
 Requires at least: 5.0
-Tested up to: 6.7
+Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 4.5.0
+Stable tag: 4.5.2
 License: GPLv2 or later 
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -21,6 +21,16 @@ Signatures are stored in the WordPress database and can be easily exported to CS
 More information about the plugin and how to upgrade to the fully featured Pro version can be found at the official SpeakOut! WordPress petition plugin website: https://speakoutpetitions.com
 
 == Changelog ==
+
+== 4.5.2 ==
+
+* improvement: updated "tested up to" to WP version 6.8
+
+== 4.5.1 ==
+
+* bug fix: CSV export was throwing an error - thanks Vegard B.
+* improvement: updates to Swedish translations - thanks Magnus
+* improvement: updated "test to" to WordPress 6.8
 
 == 4.5.0 ==
 
