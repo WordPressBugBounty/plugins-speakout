@@ -298,3 +298,48 @@ body.admin-color-classic .dk-speakout-tablerow-even { background: #f7fcfe; }
 .optin-warning{
     margin-bottom: 15px;
 }
+
+.dk-speakout-settings-wrap {
+    display: table;
+    width: 100%;
+}
+
+.dk-speakout-settings-main {
+    display: table-cell;
+    width: 70%;
+    vertical-align: top;
+}
+
+.dk-speakout-settings-sidebar {
+    display: table-cell;
+    width: 30%;
+    padding-left: 20px;
+    vertical-align: top;
+}
+
+.button-secondary.upgrade-button {
+    background-color: #46a35e;
+    color: #fff;
+    border-color: #46a35e;
+}
+
+.button-secondary.upgrade-button:hover {
+    background-color: #3e9151;
+    border-color: #3e9151;
+    color: #fff;
+}
+
+.upgrade-button-wrapper {
+    padding-left: 20px;
+}
+
+.form-table tr, .misc-pub-section {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.upgrade-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

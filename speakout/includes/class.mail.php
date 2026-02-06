@@ -27,7 +27,7 @@ class dk_speakout_Mail
 		$confirmation_url = '<a href="' . home_url() . '/?dkspeakoutconfirm=' . $signature->confirmation_code . '&b=' . $doBCC  . '&lang=' . get_bloginfo( 'language' ) . '">' . home_url() . '/?dkspeakoutconfirm=' . $signature->confirmation_code . '&b=' . $doBCC . '&lang=' . get_bloginfo( 'language' ) . '</a>'; 
 
 		// add confirmation link to email if user left it out
-		if ( strpos( $message, '%confirmation_link%' ) == false ) {
+		if ( strpos( $message, '%confirmation_link%' ) === false ) {
 			$message = $message . "\r\n" . $confirmation_url;
 		}
 
@@ -46,10 +46,10 @@ class dk_speakout_Mail
 		self::send( $email, $subject, $message, $headers );
         
 		if ( $options['webhooks'] == 'on' ) {
-            $theId = $petition->id;
-            $theTitle = $petition->title;
-            do_action( 'speakout_after_confirmation_sent', $theId, $theTitle, $email );
-        }
+                    $theId = $petition->id;
+                    $theTitle = $petition->title;
+                    do_action( 'speakout_after_confirmation_sent', $theId, $theTitle, $email );
+                }
 	}
     
     
@@ -61,6 +61,8 @@ class dk_speakout_Mail
 	 */
 	public static function send_petition( $petition, $signature, $doBCC )
 	{
+		$options = get_option( 'dk_speakout_options' );
+		$options = get_option( 'dk_speakout_options' );
         //to avoid clashing with other resources using parsedown
         if ( ! class_exists( 'Parsedown' ) ) {
             include_once( 'parsedown.php' );
@@ -74,6 +76,11 @@ class dk_speakout_Mail
 		$message = $petition->petition_message;
 		if ( $signature->custom_message != '' ) {
 			$message = $signature->custom_message;
+		}
+
+		// ensure message is a string to prevent deprecated warning
+		if ( is_null( $message ) ) {
+			$message = '';
 		}
 		
 		// replace user-supplied variables

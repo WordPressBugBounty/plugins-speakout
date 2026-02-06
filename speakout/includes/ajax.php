@@ -9,7 +9,7 @@ function dk_speakout_sendmail() {
 
 	// set WPML language
 	global $sitepress;
-	$lang = isset( $_POST['lang'] ) ? sanitize_text_field( $_POST['lang'] ): '';
+	$lang = isset( $_POST['lang'] ) ? sanitize_text_field( wp_unslash( $_POST['lang'] ) ) : '';
 	if ( isset( $sitepress ) ) {
 		$sitepress->switch_lang( $lang, true );
 	}
@@ -50,8 +50,8 @@ function dk_speakout_sendmail() {
 		else {
 			if ( $the_petition->sends_email ) {
 			    //email target
-				dk_speakout_Mail::send_petition( $the_petition, $the_signature,"" );
-			}    
+				dk_speakout_Mail::send_petition( $the_petition, $the_signature, 0 );
+			}
 		}
 
 		// add signature to database
@@ -62,7 +62,7 @@ function dk_speakout_sendmail() {
 		$success_message = str_replace( '%first_name%', $the_signature->first_name, $success_message );
 		$success_message = str_replace( '%last_name%', $the_signature->last_name, $success_message );
         $success_message = str_replace( '%signature_number%', ($the_petition->signatures + 1), $success_message );
-		
+
 
 		if($the_petition->displays_custom_message == 1){
 			$success_message .= stripslashes( esc_attr( $the_petition->custom_message_label ) );
@@ -77,7 +77,7 @@ function dk_speakout_sendmail() {
 		echo $json_response;
 	}
 	else {
-		
+
 		$json_response = array(
 			'status'  => 'error',
 			'message' => $options['already_signed_message']
@@ -95,25 +95,37 @@ add_action( 'wp_ajax_dk_speakout_paginate_signaturelist', 'dk_speakout_paginate_
 add_action( 'wp_ajax_nopriv_dk_speakout_paginate_signaturelist', 'dk_speakout_paginate_signaturelist' );
 function dk_speakout_paginate_signaturelist() {
 	include_once( 'class.signaturelist.php' );
-	$list = new dk_speakout_Signaturelist();
-	$table = $list->table( sanitize_text_field( $_POST['id']) , 
-                          sanitize_text_field( $_POST['start'] ), 
-                          sanitize_text_field( $_POST['limit'] ), 
-                          'ajax', 
-                          sanitize_text_field( $_POST['dateformat'] ),
-                          
-                          $_POST['hideUnconfirmed']
-                         );
-	echo esc_html( $table );
-    echo wp_kses(
-        $table,
-            array(
-                'tr'     => array(),
-                'td'     => array(),
-            )
-        );
+	$list            = new dk_speakout_Signaturelist();
+	$id              = isset( $_POST['id'] ) ? absint( $_POST['id'] ) : 0;
+	$start           = isset( $_POST['start'] ) ? absint( $_POST['start'] ) : 0;
+	$limit           = isset( $_POST['limit'] ) ? absint( $_POST['limit'] ) : 0;
+	$dateformat      = isset( $_POST['dateformat'] ) ? sanitize_text_field( wp_unslash( $_POST['dateformat'] ) ) : 'Y-m-d';
+	$hideUnconfirmed = isset( $_POST['hideUnconfirmed'] ) && $_POST['hideUnconfirmed'] === 'true' ? true : false;
+
+	$table = $list->table( $id, $start, $limit, 'ajax', $dateformat, $hideUnconfirmed );
+	echo $table;
 	// end AJAX processing
 	die();
+}
+
+// AJAX handler to hide the MailerLite form
+add_action( 'wp_ajax_dk_speakout_hide_mailerlite_form', 'dk_speakout_hide_mailerlite_form' );
+
+function dk_speakout_hide_mailerlite_form() {
+	// Security check
+	check_ajax_referer( 'dk_speakout_ajax_nonce', 'nonce' );
+
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( 'Insufficient privileges: You need to be an administrator to do that.' );
+	}
+
+	$hide = isset( $_POST['hide'] ) && $_POST['hide'] == 1 ? 1 : 0;
+
+	// Update user meta to hide the form
+	update_user_meta( get_current_user_id(), 'mailerlite_form_hidden', $hide );
+
+	// Send a success response
+	wp_send_json_success();
 }
 
 ?>

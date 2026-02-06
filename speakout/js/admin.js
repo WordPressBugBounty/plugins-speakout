@@ -627,13 +627,14 @@ if ($('#allFieldsReturned').length && $("#allFieldsReturned").val() > ""){
 	// make the correct tab active on page load
 	var currentTab = $( 'input#dk-speakout-tab' ).val();
 
-		//hide the save button on the license page load
-		if($( 'input#dk-speakout-tab' ).val() == 'dk-speakout-tab-07'){
-		    $( '.button-primary' ).hide();
-		}else{
-		    $( '.button-primary' ).show();
-		}
-		
+	//hide the save button on the license page load
+	if($( 'input#dk-speakout-tab' ).val() == 'dk-speakout-tab-07'){
+	    $( '.button-primary' ).hide();
+	}else{
+	    $( '.button-primary' ).show();
+	}
+	
+	$( '.dk-speakout-tabcontent' ).hide();
 	$( '#' + currentTab ).show();
 	$( 'ul#dk-speakout-tabbar li a.' + currentTab ).addClass( 'dk-speakout-active' );
 
@@ -659,5 +660,30 @@ if ($('#allFieldsReturned').length && $("#allFieldsReturned").val() > ""){
 		}
 
 		$( '#' + newTab ).show();
+	});
+
+	// Toggle the MailerLite form
+	$( document ).on( 'click', '#speakout-hide-mailerlite-form', function( e ) {
+		e.preventDefault();
+		$( '.dk-speakout-settings-sidebar' ).find( 'iframe' ).hide();
+		$( this ).text( dk_speakout_js.show_tips ).attr( 'id', 'speakout-show-mailerlite-form' );
+		var data = {
+			'action': 'dk_speakout_hide_mailerlite_form',
+			'hide': 1,
+			'nonce': dk_speakout_js.nonce
+		};
+		$.post( dk_speakout_js.ajaxurl, data );
+	});
+
+	$( document ).on( 'click', '#speakout-show-mailerlite-form', function( e ) {
+		e.preventDefault();
+		$( '.dk-speakout-settings-sidebar' ).find( 'iframe' ).show();
+		$( this ).text( dk_speakout_js.hide_tips ).attr( 'id', 'speakout-hide-mailerlite-form' );
+		var data = {
+			'action': 'dk_speakout_hide_mailerlite_form',
+			'hide': 0,
+			'nonce': dk_speakout_js.nonce
+		};
+		$.post( dk_speakout_js.ajaxurl, data );
 	});
 });

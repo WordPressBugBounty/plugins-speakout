@@ -1,10 +1,13 @@
+<?php include_once( 'upgrade-prompt.php' ); ?>
 <style>
     label{margin:10px 0 5px 0;}
 </style><div class="wrap" id="dk-speakout">
 	<div id="icon-dk-speakout" class="icon32"><br /></div>
 	<h2><?php echo esc_html( $page_title ); ?></h2> 
         
-  <div id="upgradeTopDisplay"><span class="upgrade-message">In the free version you are limited to this one petition and some features are unavailable. <a href="<?php echo site_url(); ?>/wp-admin/admin.php?page=dk_speakout_upgrade"><?php _e("Upgrade to Pro", "speakout"); ?></a></span></div><div id="requiredInfo"><span class="required"> </span> = required field</div>
+  <div class="notice notice-info">
+		<p><?php _e( 'Some features are only available in the Pro version.', 'speakout' ); ?> <a href="<?php echo site_url(); ?>/wp-admin/admin.php?page=dk_speakout_upgrade"><?php _e( 'Upgrade Now', 'speakout' ); ?></a></p>
+	</div><div id="requiredInfo"><span class="required"> </span> = required field</div>
 
 	<?php if ( $message_update ) echo '<div id="message" class="updated"><p>' . esc_html( $message_update ) . '</p></div>'; ?>
 	<div id="message" class="error dk-speakout-error-msg"><p><?php _e( 'Error: Please correct the highlighted fields.  It may be behind a closed tab', 'speakout' ); ?></p></div>
@@ -28,7 +31,7 @@
     	    <div id="titlediv">
 				<div id="titlewrap">
 					<label for="title" class="required"><?php _e( 'Title', 'speakout' ); ?></label>
-					<input type="text" name="title" size="100" tabindex="1" value="<?php echo esc_html(  stripcslashes ($petition->title)  ); ?>" id="title" <?php if($petition->title == ""){ echo " placeholder='"; _e( 'Enter title here', 'speakout' ); echo "'"; }?>/>
+					<input type="text" name="title" size="100" tabindex="1" value="<?php echo esc_html(  stripcslashes ($petition->title ?? '')  ); ?>" id="title" <?php if($petition->title == ""){ echo " placeholder='"; _e( 'Enter title here', 'speakout' ); echo "'"; }?>/>
 				</div>
 			</div>
   
@@ -55,26 +58,26 @@
 						<input name="target_email_CC" id="target_email_CC" value="<?php echo esc_attr( $petition->target_email_CC ); ?>" size="40" maxlength="300" type="text" />
 
 						<label for="email_subject" class="required"><?php _e( 'Email Subject', 'speakout' ); ?></label>
-						<input name="email_subject" id="email_subject" value="<?php echo stripcslashes( $petition->email_subject ) ; ?>" size="40" maxlength="80" type="text" />
+						<input name="email_subject" id="email_subject" value="<?php echo stripcslashes( $petition->email_subject ?? '' ) ; ?>" size="40" maxlength="80" type="text" />
 
 						<label for="greeting" class="required"><?php _e( 'Greeting', 'speakout' ); ?></label>
-						<input name="greeting" id="greeting" value="<?php echo stripcslashes( $petition->greeting ); ?>" size="40" maxlength="80" type="text" />
+						<input name="greeting" id="greeting" value="<?php echo stripcslashes( $petition->greeting ?? '' ); ?>" size="40" maxlength="80" type="text" />
 					</div>
 				</div>
 
 
 				<label for="petition_message"  class="required"><?php _e( 'Petition Message', 'speakout' ); ?></label>
-				<textarea name="petition_message" id="petition_message" rows="10" cols="80"><?php echo stripcslashes( $petition->petition_message ); ?></textarea>
+				<textarea name="petition_message" id="petition_message" rows="10" cols="80"><?php echo stripcslashes( $petition->petition_message ?? '' ); ?></textarea>
                 <div class="insert_tags"><?php _e('You can personalise the message by inserting tags'); ?>: %honorific%  %first_name%  %last_name% %petition_title%</div>
                 <div class="markdown"><?php _e('You or the signer can format the message using Markdown syntax - see'); ?> <a href="https://speakoutpetitions.com/markdown-guide/" target="_new">https://speakoutpetitions.com/markdown-guide</a></div>
 			
  				<label for="petition_footer"><?php _e( 'Petition Footer (below signature)', 'speakout' ); ?></label>
-				<textarea name="petition_footer" id="petition_footer" rows="3" cols="80"><?php echo stripcslashes( $petition->petition_footer ); ?></textarea>
+				<textarea name="petition_footer" id="petition_footer" rows="3" cols="80"><?php echo stripcslashes( $petition->petition_footer ?? '' ); ?></textarea>
 		</div>
 
 		<div class="postbox">
 			<label for="x_message"><?php _e( 'X (Twiter) Message', 'speakout' ); ?></label>
-				<textarea name="x_message" id="x_message" rows="2" cols="80"><?php echo stripcslashes( $petition->x_message ); ?></textarea>
+				<textarea name="x_message" id="x_message" rows="2" cols="80"><?php echo stripcslashes( $petition->x_message ?? '' ); ?></textarea>
 				<div id="x-counter"></div> 
 		</div>
 
@@ -125,11 +128,12 @@
     			</div>
     
     			<!-- Editable -->
-    			<div class="misc-pub-section">
+    			<div class="misc-pub-section upgrade-section">
     				<div class="dk-speakout-checkbox">
-    					<span class="freeCheck"><a href="<?php site_url(); ?>/wp-admin/admin.php?page=dk_speakout_upgrade"><img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png"></a></span>
+    					<img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png">
     					<label for="is_editable" class="dk-speakout-inline"><?php _e( 'Allow message to be edited', 'speakout'); ?></label>
     				</div>
+                    <div class="upgrade-button-wrapper"><?php dk_speakout_upgrade_button(); ?></div>
     			</div>
     
     			<!-- Signature Goal -->
@@ -149,19 +153,30 @@
     			</div>
     
     			<!-- Expiration Date -->
-    			<div class="misc-pub-section misc-pub-section-last">
+    			<div class="misc-pub-section misc-pub-section-last upgrade-section">
     				<div class="dk-speakout-checkbox">
-    					<span class="freeCheck"><a href="<?php site_url(); ?>/wp-admin/admin.php?page=dk_speakout_upgrade"><img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png"></a></span>
+    					<img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png">
     					<label for="expires" class="dk-speakout-inline"><?php _e( 'Set expiration date', 'speakout'); ?></label>
     				</div>
+                    <div class="upgrade-button-wrapper"><?php dk_speakout_upgrade_button(); ?></div>
     			</div>
     			
                 <!-- Reirection URL -->
-    			<div class="misc-pub-section">
+    			<div class="misc-pub-section upgrade-section">
     				<div class="dk-speakout-checkbox">
-    					<span class="freeCheck"><a href="<?php site_url(); ?>/wp-admin/admin.php?page=dk_speakout_upgrade"><img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png"></a></span>
+    					<img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png">
     					<label for="redirect_url_option" class="dk-speakout-inline"><?php _e( 'Redirect after successful sign', 'speakout'); ?></label>
     				</div>
+                    <div class="upgrade-button-wrapper"><?php dk_speakout_upgrade_button(); ?></div>
+    			</div>
+
+				<!-- Email to signer -->
+    			<div class="misc-pub-section upgrade-section">
+    				<div class="dk-speakout-checkbox">
+    					<img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png">
+    					<label for="is_editable" class="dk-speakout-inline"><?php _e( 'Email to signer', 'speakout'); ?></label> <a href="https://speakoutpetitions.com/faqconc/include-user-fields-in-thank-you-email/" target="_blank">?</a>
+    				</div>
+                    <div class="upgrade-button-wrapper"><?php dk_speakout_upgrade_button(); ?></div>
     			</div>
     		</div>
         </div> <!-- end postbox -->
@@ -171,19 +186,19 @@
         <div class="postbox">
         	<div id="minor-publishing">
         	   <!-- read petition option -->
-                <div class="misc-pub-section">
+                <div class="misc-pub-section upgrade-section">
         		    <div class="dk-speakout-checkbox">
         				<label for="open_message_button" class="dk-speakout-inline"><?php _e( 'Text to open/close petition message', 'speakout'); ?></label>
-        				<span class="freeText"><?php echo esc_html( $petition->open_message_button ); ?></span> <a href="<?php site_url(); ?>/wp-admin/admin.php?page=dk_speakout_upgrade"><img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png"></a> <a href="https://speakoutpetitions.com/faqconc/can-i-change-read-the-petition-text/" target="_blank">?</a>
-        				
+        				<span class="freeText"><?php echo esc_html( $petition->open_message_button ); ?></span> <img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png"> <a href="https://speakoutpetitions.com/faqconc/can-i-change-read-the-petition-text/" target="_blank">?</a>
         			</div>
+                    <div class="upgrade-button-wrapper"><?php dk_speakout_upgrade_button(); ?></div>
         		</div>
-        		<div class="misc-pub-section">
+        		<div class="misc-pub-section upgrade-section">
                     <div class="dk-speakout-checkbox">
         				<label for="open_editable_message_button" class="dk-speakout-inline"><?php _e( 'Text to open/close editable petition message', 'speakout'); ?></label>
-        				<span class="freeText"><?php echo esc_html( $petition->open_editable_message_button ); ?></span> <a href="<?php site_url(); ?>/wp-admin/admin.php?page=dk_speakout_upgrade"><img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png"></a> <a href="https://speakoutpetitions.com/faqconc/can-i-change-read-the-petition-text/" target="_blank">?</a>
-        				
+        				<span class="freeText"><?php echo esc_html( $petition->open_editable_message_button ); ?></span> <img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png"> <a href="https://speakoutpetitions.com/faqconc/can-i-change-read-the-petition-text/" target="_blank">?</a>
         			</div>
+                    <div class="upgrade-button-wrapper"><?php dk_speakout_upgrade_button(); ?></div>
         		</div>        		
         		<!-- Email Opt-in -->
         		<div class="misc-pub-section">
@@ -284,80 +299,86 @@
         		</div>
  
         		<!-- Custom Field #2 -->
-        		<div class="misc-pub-section lineBelow">
+        		<div class="misc-pub-section lineBelow upgrade-section">
         			<div class="dk-speakout-checkbox">
-        				<span class="freeCheck"><a href="<?php site_url(); ?>/wp-admin/admin.php?page=dk_speakout_upgrade"><img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png"></a></span>
+        				<img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png">
         				<label for="displays-custom-field2" class="dk-speakout-inline"><?php _e( 'Display custom field 2', 'speakout'); ?></label>
         			</div>
+                    <div class="upgrade-button-wrapper"><?php dk_speakout_upgrade_button(); ?></div>
         		</div>
                 
         		<!-- Custom Field #3 -->
-        		<div class="misc-pub-section lineBelow">
+        		<div class="misc-pub-section lineBelow upgrade-section">
         			<div class="dk-speakout-checkbox">
-        				<span class="freeCheck"><a href="<?php site_url(); ?>/wp-admin/admin.php?page=dk_speakout_upgrade"><img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png"></a></span>
+        				<img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png">
         				<label for="displays-custom-field3" class="dk-speakout-inline"><?php _e( 'Display custom field 3', 'speakout'); ?></label>
         			</div>
+                    <div class="upgrade-button-wrapper"><?php dk_speakout_upgrade_button(); ?></div>
         		</div>
                 
                 
         		<!-- Custom Field #4 -->
-        		<div class="misc-pub-section lineBelow">
+        		<div class="misc-pub-section lineBelow upgrade-section">
         			<div class="dk-speakout-checkbox">
-        				<span class="freeCheck"><a href="<?php site_url(); ?>/wp-admin/admin.php?page=dk_speakout_upgrade"><img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png"></a></span>
+        				<img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png">
         				<label for="displays-custom-field4" class="dk-speakout-inline"><?php _e( 'Display custom field 4', 'speakout'); ?></label>
         			</div>
+                    <div class="upgrade-button-wrapper"><?php dk_speakout_upgrade_button(); ?></div>
         		</div>
                 
         		<!-- Custom Field #5 -->
-        		<div class="misc-pub-section lineBelow">
+        		<div class="misc-pub-section lineBelow upgrade-section">
         			<div class="dk-speakout-checkbox">
-        				<span class="freeCheck"><a href="<?php site_url(); ?>/wp-admin/admin.php?page=dk_speakout_upgrade"><img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png"></a></span>
+        				<img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png">
         				<label for="displays-custom5-field" class="dk-speakout-inline"><?php _e( 'Display custom drop-down', 'speakout'); ?> 1</label>
         			</div>
+                    <div class="upgrade-button-wrapper"><?php dk_speakout_upgrade_button(); ?></div>
         		</div>
         		
           		<!-- Custom Field #6 -->
-        		<div class="misc-pub-section lineBelow">
+        		<div class="misc-pub-section lineBelow upgrade-section">
         			<div class="dk-speakout-checkbox">
-        				<span class="freeCheck"><a href="<?php site_url(); ?>/wp-admin/admin.php?page=dk_speakout_upgrade"><img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png"></a></span>
+        				<img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png">
         				<label for="displays-custom-field6" class="dk-speakout-inline"><?php _e( 'Display custom checkbox 1', 'speakout'); ?></label>
         			</div>
+                    <div class="upgrade-button-wrapper"><?php dk_speakout_upgrade_button(); ?></div>
         		</div>
                       		
         		
           		<!-- Custom Field #7 -->
-        		<div class="misc-pub-section lineBelow">
+        		<div class="misc-pub-section lineBelow upgrade-section">
         			<div class="dk-speakout-checkbox">
-        				<span class="freeCheck"><a href="<?php site_url(); ?>/wp-admin/admin.php?page=dk_speakout_upgrade"><img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png"></a></span>
+        				<img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png">
         				<label for="displays-custom-field7" class="dk-speakout-inline"><?php _e( 'Display custom checkbox 2', 'speakout'); ?></label>
         			</div>
+                    <div class="upgrade-button-wrapper"><?php dk_speakout_upgrade_button(); ?></div>
         		</div>
  
                 
                 
                 <!-- Custom Field #8 -->
-        		<div class="misc-pub-section lineBelow">
+        		<div class="misc-pub-section lineBelow upgrade-section">
         			<div class="dk-speakout-checkbox">
-        				<span class="freeCheck"><a href="<?php site_url(); ?>/wp-admin/admin.php?page=dk_speakout_upgrade"><img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png"></a></span>
+        				<img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png">
         				<label for="displays-custom-field8" class="dk-speakout-inline"><?php _e( 'Display custom checkbox 3', 'speakout'); ?></label>
         			</div>
-        			
+        			<div class="upgrade-button-wrapper"><?php dk_speakout_upgrade_button(); ?></div>
         		</div>
                 
                 <!-- Custom Field #9 -->
-        		<div class="misc-pub-section lineBelow">
+        		<div class="misc-pub-section lineBelow upgrade-section">
         			<div class="dk-speakout-checkbox">
-        				<span class="freeCheck"><a href="<?php site_url(); ?>/wp-admin/admin.php?page=dk_speakout_upgrade"><img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png"></a></span>
+        				<img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png">
         				<label for="displays-custom-field9" class="dk-speakout-inline"><?php _e( 'Display custom checkbox 4', 'speakout'); ?></label>
         			</div>
-        			
+        			<div class="upgrade-button-wrapper"><?php dk_speakout_upgrade_button(); ?></div>
         		</div>
         		
         		<!-- Custom Message -->
-        		<div class="misc-pub-section   misc-pub-section-last">
+        		<div class="misc-pub-section   misc-pub-section-last upgrade-section">
         		    
         			<div class="dk-speakout-checkbox">
-        				<span class="freeCheck"><a href="<?php site_url(); ?>/wp-admin/admin.php?page=dk_speakout_upgrade"><img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png"></a></span>
+        				<img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png">
         				<label for="displays-custom-message" class="dk-speakout-inline"><?php _e( 'Display custom message', 'speakout'); ?></label>
         			</div><span class="margin-20-left"><?php _e( 'Displayed beneath `Thank you` after petition is signed', 'speakout'); ?></span><br />
         			
@@ -365,7 +386,7 @@
         				<label for="custom-message-label"><?php _e( 'Message', 'speakout'); ?>:</label>
         				<input id="custom-message-label" name="custom-message-label" value="<?php echo trim( esc_html( $petition->custom_message_label ) ); ?>" size="30" maxlength="200" type="text" />
         			</div>
-        			
+        			<div class="upgrade-button-wrapper"><?php dk_speakout_upgrade_button(); ?></div>
         		</div>
     		</div>
     	</div>
@@ -376,36 +397,40 @@
             <div class="optin-warning"><?php _e("These features are only available in the Pro version", 'speakout'); ?></div>
             <div id="minor-publishing">
                 
-                <div class="misc-pub-section">
+                <div class="misc-pub-section upgrade-section">
                     <div class="dk-speakout-checkbox ">
-                        <span class="freeCheck"><a href="<?php site_url(); ?>/wp-admin/admin.php?page=dk_speakout_upgrade"><img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png"></a></span>
+                        <img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png">
                         <label for="dk-speakout-activecampaign-enable" class="dk-speakout-inline"><?php _e( 'Enable ActiveCampaign', 'speakout'); ?></label>
                     </div>
+                    <div class="upgrade-button-wrapper"><?php dk_speakout_upgrade_button(); ?></div>
                 </div>   
 
-                <div class="misc-pub-section">
+                <div class="misc-pub-section upgrade-section">
                 
                     <div class="dk-speakout-checkbox ">
-                        <span class="freeCheck"><a href="<?php site_url(); ?>/wp-admin/admin.php?page=dk_speakout_upgrade"><img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png"></a></span>
+                        <img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png">
                         <label for="dk-speakout-mailchimp-enable" class="dk-speakout-inline"><?php _e( 'Enable MailChimp', 'speakout'); ?></label>
                     </div>
+                    <div class="upgrade-button-wrapper"><?php dk_speakout_upgrade_button(); ?></div>
                 </div>
                     
-                <div class="misc-pub-section">
+                <div class="misc-pub-section upgrade-section">
                 
                     <div class="dk-speakout-checkbox ">
-                        <span class="freeCheck"><a href="<?php site_url(); ?>/wp-admin/admin.php?page=dk_speakout_upgrade"><img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png"></a></span>
+                        <img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png">
                         <label for="dk-speakout-mailerlite-enable" class="dk-speakout-inline"><?php _e( 'Enable Mailerlite', 'speakout'); ?></label>
                     </div>
+                    <div class="upgrade-button-wrapper"><?php dk_speakout_upgrade_button(); ?></div>
                 </div>
             
             
-                <div class="misc-pub-section">
+                <div class="misc-pub-section upgrade-section">
                 
                     <div class="dk-speakout-checkbox ">
-                        <span class="freeCheck"><a href="<?php site_url(); ?>/wp-admin/admin.php?page=dk_speakout_upgrade"><img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png"></a></span>
+                        <img src="<?php echo content_url(); ?>/plugins/speakout/images/lock.png">
                         <label for="dk-speakout-sendy-enable" class="dk-speakout-inline"><?php _e( 'Enable Sendy', 'speakout'); ?></label>
                     </div>
+                    <div class="upgrade-button-wrapper"><?php dk_speakout_upgrade_button(); ?></div>
                 </div>
             
             </div>

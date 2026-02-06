@@ -285,7 +285,9 @@ class dk_speakout_Signature
 	 */
 	public function create( $petition_id, $increase_goal)
 	{
+		$options = get_option( 'dk_speakout_options' );
 		global $wpdb, $db_signatures;
+		$options = get_option( 'dk_speakout_options' );
 
 		$data = array(
 			'petitions_id'      => $petition_id,
@@ -480,11 +482,13 @@ class dk_speakout_Signature
 		if ( isset( $_POST['custom_field7'] ) ) {
 			$this->custom_field7 = 1;
 		}
-		if ( isset( $_POST['optin'] ) && $_POST['optin'] == 'on' ) {
+		if ( isset( $_POST['optin'] ) ) {
 			$this->optin = 1;
 		}
-		if ( isset( $_POST['anonymise'] ) && $_POST['anonymise'] == 'on' ) {
+		if ( isset( $_POST['anonymise'] ) && $_POST['anonymise'] == 1 ) {
 			$this->anonymise = 1;
+		} else {
+			$this->anonymise = 0;
 		}
 		if ( isset( $_POST['lang'] ) ) {
 			$this->language = sanitize_text_field( $_POST['lang'] );
@@ -511,6 +515,35 @@ class dk_speakout_Signature
 	}
 
 	/**
+	 * Retrieves a signature via its confirmation_code
+	 * and populates this object with the result
+	 * 
+	 * @param $confirmation_code (string) the signature's confirmation_code
+	 */
+	public function retrieve_by_confirmation_code( $confirmation_code )
+	{
+		// Always validate input. The confirmation code should be a 16-character hexadecimal string.
+		if ( ! is_string( $confirmation_code ) || ! preg_match( '/^[a-f0-9]{16}$/', $confirmation_code ) ) {
+			return;
+		}
+
+		global $wpdb, $db_signatures;
+
+		$sql = "
+			SELECT *
+			FROM $db_signatures
+			WHERE `confirmation_code` = %s
+		";
+		$query_results = $wpdb->get_row( $wpdb->prepare( $sql, $confirmation_code ) );
+
+		if ( $query_results ) {
+			$this->_populate_from_query( $query_results );
+		}
+	}
+
+
+
+	/**
 	 * Retrieves a confirmed signature via its confirmation_code
 	 * and populates this object with the result
 	 * 
@@ -529,6 +562,7 @@ class dk_speakout_Signature
 
 		$this->_populate_from_query( $query_results );
 	}
+
 
 	/**
 	 * Retrieves unconfirmed signatures from the database

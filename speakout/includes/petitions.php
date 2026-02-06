@@ -25,9 +25,10 @@ function dk_speakout_petitions_page() {
 	$query_start  = ( $current_page * $query_limit ) - $query_limit;
 
 	// link URL for "Add New" button in header
-	$addnew_url = esc_url( site_url() . '/wp-admin/admin.php?page=dk_speakout_addnew' );
-	$complete = get_option( "dk_speakout_license_key_verified" );
-
+	$addnew_url = esc_url( admin_url( 'admin.php?page=dk_speakout_addnew_page' ) );
+	
+	// define a single, reliable base_url for pagination links
+	$base_url = remove_query_arg( array( 'paged', 'total_pages', 'action', 'id', '_wpnonce' ) );
 
 	switch ( $action ) {
 

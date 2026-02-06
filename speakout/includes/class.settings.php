@@ -46,9 +46,11 @@ class dk_speakout_Settings
     public $g_recaptcha_version = "";
 	public $g_recaptcha_status = "off";
 	public $g_recaptcha_site_key = "";
+	public $g_recaptcha_secret_key = "";
 	public $g_recaptcha_private_key = "";
 	public $hcaptcha_status = "off" ;
 	public $hcaptcha_site_key = "";
+	public $hcaptcha_secret_key = "";
 	public $hcaptcha_private_key = "";
 	public $display_anedot = "off";
 	public $display_sharing = "on";
@@ -81,6 +83,7 @@ class dk_speakout_Settings
     public $sigtab_display_time;
     public $sigtab_IP_address;
     public $webhooks = "off";
+	
 
 	/**
 	 * Retrieves the plugin options and populates this object
@@ -111,16 +114,16 @@ class dk_speakout_Settings
 		$this->signaturelist_display  		= $options['signaturelist_display'];
 		$this->signaturelist_columns  		= $options['signaturelist_columns'];
 		$this->display_bcc            		= $options['display_bcc'];
-		$this->display_privacypolicy    	= $options['display_privacypolicy'];
-		$this->privacypolicy_url        	= $options['privacypolicy_url'];
-        $this->g_recaptcha_version          = $options['g_recaptcha_version'];
-		$this->g_recaptcha_status           = $options['g_recaptcha_status'];
-		$this->g_recaptcha_site_key         = $options['g_recaptcha_site_key'];
-		$this->g_recaptcha_secret_key       = $options['g_recaptcha_secret_key'];
-		$this->hcaptcha_status           	= $options['hcaptcha_status'];
-		$this->hcaptcha_site_key            = $options['hcaptcha_site_key'];
-		$this->hcaptcha_secret_key          = $options['hcaptcha_secret_key'];
-		$this->display_anedot               = $options['display_anedot'];
+		$this->display_privacypolicy    	= isset( $options['display_privacypolicy'] ) ? $options['display_privacypolicy'] : 'off';
+		$this->privacypolicy_url        	= isset( $options['privacypolicy_url'] ) ? $options['privacypolicy_url'] : '';
+        $this->g_recaptcha_version          = isset( $options['g_recaptcha_version'] ) ? $options['g_recaptcha_version'] : '';
+		$this->g_recaptcha_status           = isset( $options['g_recaptcha_status'] ) ? $options['g_recaptcha_status'] : 'off';
+		$this->g_recaptcha_site_key         = isset( $options['g_recaptcha_site_key'] ) ? $options['g_recaptcha_site_key'] : '';
+		$this->g_recaptcha_secret_key       = isset( $options['g_recaptcha_secret_key'] ) ? $options['g_recaptcha_secret_key'] : '';
+		$this->hcaptcha_status           	= isset( $options['hcaptcha_status'] ) ? $options['hcaptcha_status'] : 'off';
+		$this->hcaptcha_site_key            = isset( $options['hcaptcha_site_key'] ) ? $options['hcaptcha_site_key'] : '';
+		$this->hcaptcha_secret_key          = isset( $options['hcaptcha_secret_key'] ) ? $options['hcaptcha_secret_key'] : '';
+		$this->display_anedot               = isset( $options['display_anedot'] ) ? $options['display_anedot'] : 'off';
 		$this->display_sharing              = $options['display_sharing'];
 		$this->display_honorific      		= $options['display_honorific'];
         $this->anedot_page_id				= $options['anedot_page_id'];
@@ -152,6 +155,7 @@ class dk_speakout_Settings
         $this->sigtab_display_time          = $options['sigtab_display_time'];
         $this->sigtab_IP_address            = $options['sigtab_IP_address'];
         $this->webhooks                     = $options['webhooks'];
+        
     
 		$this->_read_signaturelist_columns();
 	}
@@ -229,6 +233,7 @@ class dk_speakout_Settings
             'sigtab_display_time'       => $this->sigtab_display_time,
             'sigtab_IP_address'         => $this->sigtab_IP_address,
             'webhooks'                  => $this->webhooks,
+            
 		);
 
 		update_option( 'dk_speakout_options', $options );
@@ -257,11 +262,31 @@ class dk_speakout_Settings
         
                 
         // sanitize name and email
-        $input = $_POST['confirm_email'];
-        preg_match( '/([^<]+)<([^>]+)>/i', $input, $matches, PREG_UNMATCHED_AS_NULL );
-        $name = sanitize_text_field( $matches[ 1 ] );
-        $email = sanitize_email( $matches[ 2 ] );
-        $this->confirm_email    =   $name . " <" . $email . ">" ;
+        $input = isset( $_POST['confirm_email'] ) ? stripslashes( $_POST['confirm_email'] ) : '';
+        $name  = '';
+        $email = '';
+
+        if ( preg_match( '/([^<]*)<([^>]*)>/', $input, $matches ) ) {
+            // Format: "Some Name <email@example.com>"
+            $name  = sanitize_text_field( trim( $matches[1] ) );
+            $email = sanitize_email( trim( $matches[2] ) );
+        }
+        else {
+            // Format: "email@example.com"
+            $email = sanitize_email( trim( $input ) );
+        }
+
+        if ( is_email( $email ) ) {
+            if ( ! empty( $name ) ) {
+                $this->confirm_email = $name . ' <' . $email . '>';
+            }
+            else {
+                $this->confirm_email = $email;
+            }
+        }
+        else {
+            $this->confirm_email = ''; // Invalid email, clear it.
+        }
         
         
 		$allowed_tags = $this->_allowed_html_tags();
@@ -296,17 +321,20 @@ class dk_speakout_Settings
 		$this->display_bcc               = sanitize_text_field( $_POST['display_bcc'] );
 		$this->display_privacypolicy     = sanitize_text_field( $_POST['display_privacypolicy'] );
 		$this->privacypolicy_url         = sanitize_text_field( $_POST['privacypolicy_url'] );
-        if(isset($_POST['g_recaptcha_status'])){
-            $this->g_recaptcha_version       = sanitize_text_field( $_POST['g_recaptcha_version'] );
-            $this->g_recaptcha_status        = sanitize_text_field( $_POST['g_recaptcha_status'] );
-            $this->g_recaptcha_site_key      = sanitize_text_field( $_POST['g_recaptcha_site_key'] );
-            $this->g_recaptcha_secret_key    = sanitize_text_field( $_POST['g_recaptcha_secret_key'] );
-        }
-        if(isset($_POST['hcaptcha_status'])){
-            $this->hcaptcha_status           = sanitize_text_field( $_POST['hcaptcha_status'] );
-            $this->hcaptcha_site_key         = sanitize_text_field( $_POST['hcaptcha_site_key'] );
-            $this->hcaptcha_secret_key       = sanitize_text_field( $_POST['hcaptcha_secret_key'] );
-        }
+
+		if ( get_option( 'dk_speakout_pro_version' ) ) {
+			if(isset($_POST['g_recaptcha_status'])){
+				$this->g_recaptcha_version       = sanitize_text_field( $_POST['g_recaptcha_version'] );
+				$this->g_recaptcha_status        = sanitize_text_field( $_POST['g_recaptcha_status'] );
+				$this->g_recaptcha_site_key      = sanitize_text_field( $_POST['g_recaptcha_site_key'] );
+				$this->g_recaptcha_secret_key    = sanitize_text_field( $_POST['g_recaptcha_secret_key'] );
+			}
+			if(isset($_POST['hcaptcha_status'])){
+				$this->hcaptcha_status           = sanitize_text_field( $_POST['hcaptcha_status'] );
+				$this->hcaptcha_site_key         = sanitize_text_field( $_POST['hcaptcha_site_key'] );
+				$this->hcaptcha_secret_key       = sanitize_text_field( $_POST['hcaptcha_secret_key'] );
+			}
+		}
 		$this->display_anedot            = sanitize_text_field( $_POST['display_anedot'] );
 		$this->display_sharing           = sanitize_text_field( $_POST['display_sharing'] );
 		$this->display_honorific		 = sanitize_text_field( $_POST['display_honorific'] );
@@ -341,6 +369,7 @@ class dk_speakout_Settings
         $this->sigtab_display_time       = sanitize_text_field( $_POST['sigtab_display_time'] );
         $this->sigtab_IP_address         = sanitize_text_field( $_POST['sigtab_IP_address'] );
         $this->webhooks                  = $_POST['webhooks'] ;
+        
         	}
 	
 	/**

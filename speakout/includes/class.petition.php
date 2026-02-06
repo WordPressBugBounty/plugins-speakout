@@ -166,7 +166,7 @@ class dk_speakout_Petition
      */
      
     public function hidemenu(){
-        remove_submenu_page( 'dk_speakout_top', 'dk_speakout_addnew');
+        remove_submenu_page( 'dk_speakout_top', 'dk_speakout_addnew_page');
     }
     
 /**

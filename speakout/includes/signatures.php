@@ -30,8 +30,11 @@ function dk_speakout_signatures_page() {
 	$petitioncount = $the_petitions->count();
 	$petitionword = $petitioncount == 1 ? "petition" : "petitions";
 
-    $searchString = isset( $_REQUEST["sigsearch"] )? sanitize_text_field( $_REQUEST["sigsearch"] ): "";
+    $searchString = isset( $_REQUEST["sigsearch"] )? sanitize_text_field( wp_unslash( $_REQUEST["sigsearch"] ) ) : "";
     
+	// Set a single, reliable base_url for pagination links
+	$base_url = remove_query_arg( array( 'paged', 'total_pages' ) );
+
 	switch ( $action ) {
 		case 'petition' :
 		    // count number of signatures in database
@@ -41,8 +44,6 @@ function dk_speakout_signatures_page() {
 			// get all signatures for display
 			$signatures = $the_signatures->all( $pid, $query_start, $query_limit );
 
-			// set up display strings
-			$base_url      = site_url( 'wp-admin/admin.php?page=dk_speakout_signatures&action=petition&pid=' . $pid );
 			$message_update = '';
 		break;
 		

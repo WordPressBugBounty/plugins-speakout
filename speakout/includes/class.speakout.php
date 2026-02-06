@@ -97,9 +97,14 @@ class dk_speakout_SpeakOut
 	 * @param $page_handle (string) handle of currently loaded page
 	 * @param $current_page (int) "paged" value of the url that is currently displayed
 	 * @param $base_url (string) URL of current page with minimal get variables for constructing text links
-	 * @param $use_form (bool) whether to display the form input for switching pages
 	 */
-	public static function pagination( $limit, $count, $page_handle, $current_page, $base_url, $use_form ) {
+	public static function pagination( $limit, $count, $slug, $current_page, $base_url, $is_header = false ) {
+		// ensure current_page is an integer to prevent fatal errors
+		$current_page = (int) $current_page;
+		if ( $current_page < 1 ) {
+			$current_page = 1;
+		}
+
 		// round up the page count so we get an integer
 		$total_pages = ceil( $count / $limit );
 		// make sure arrows aren't clickable when there are zero signatures

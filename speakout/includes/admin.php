@@ -31,7 +31,7 @@ $petition = array(
 		'parent_slug' => 'dk_speakout_top',
 		'page_title'  => __( 'Edit petition', 'speakout' ),
 		'menu_title'  => __( 'Edit petition', 'speakout' ),
-		'capability'  => 'manage_options',
+		'capability'  => 'publish_posts',
 		'menu_slug'   => 'dk_speakout_addnew_page',
 		'function'    => 'dk_speakout_addnew_page',
 		'position'  => 2
@@ -105,25 +105,27 @@ function dk_speakout_menu_icon() {
 	';
 }
 
-// load JavaScript for use on admin pages
-add_action( 'admin_print_scripts', 'dk_speakout_admin_js' );
+// load JavaScript and CSS for use on admin pages
+add_action( 'admin_enqueue_scripts', 'dk_speakout_admin_enqueue_scripts' );
 
-function dk_speakout_admin_js() {
-	global $parent_file, $dk_speakout_version;
+function dk_speakout_admin_enqueue_scripts( $hook ) {
+	global $dk_speakout_version;
 
-	if ( $parent_file == 'dk_speakout_top' ) {
-		wp_enqueue_script( 'dk_speakout_admin_js', plugins_url( 'speakout/js/admin.js' ), array( 'jquery' ) , $dk_speakout_version );
+	// Only load on our admin pages
+	if ( strpos( $hook, 'dk_speakout' ) === false ) {
+		return;
 	}
-}
 
-// load CSS for use on admin pages
-add_action( 'admin_print_styles', 'dk_speakout_admin_css' );
+	wp_enqueue_style( 'dk_speakout_admin_css', plugins_url( 'speakout/css/admin.css' ) ,"", $dk_speakout_version );
+	wp_enqueue_script( 'dk_speakout_admin_js', plugins_url( 'speakout/js/admin.js' ), array( 'jquery' ) , $dk_speakout_version, true );
 
-function dk_speakout_admin_css() {
-	global $parent_file, $dk_speakout_version ;
-
-	if ( $parent_file == 'dk_speakout_top' ) {
-		wp_enqueue_style( 'dk_speakout_admin_css', plugins_url( 'speakout/css/admin.css' ) ,"", $dk_speakout_version );
-	}
+	// Localize the script with new data
+	$translation_array = array(
+		'show_tips' => __( 'Show SpeakOut! Tips', 'speakout' ),
+		'hide_tips' => __( 'Hide SpeakOut! Tips', 'speakout' ),
+		'ajaxurl'   => admin_url( 'admin-ajax.php' ),
+		'nonce'     => wp_create_nonce( 'dk_speakout_ajax_nonce' )
+	);
+	wp_localize_script( 'dk_speakout_admin_js', 'dk_speakout_js', $translation_array );
 }
 ?>

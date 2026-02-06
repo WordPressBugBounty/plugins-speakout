@@ -41,8 +41,10 @@ if ( isset( $_REQUEST['csv'] ) && $_REQUEST['csv'] == 'signatures' ) {
 			$counter ++;
 		}
 
+		ob_clean();
+
 		// set up CSV file headers
-		header( 'Content-Type: text/octet-stream; charset=UTF-8' );
+		header( 'Content-Type: text/csv; charset=utf-8' );
 		header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
 		header( 'Pragma: public' ); // supposed to make stuff work over https
 
@@ -90,45 +92,54 @@ if ( isset( $_REQUEST['csv'] ) && $_REQUEST['csv'] == 'signatures' ) {
 			$counter ++;
 		}
 
+		$csv = fopen('php://output', 'w');
+
+		fwrite($csv, chr(239) . chr(187) . chr(191));
+
 		// construct CSV file header row
-		// must use double quotes and separate with tabs    
-		$csv = "Signature ID,$petitions_id,$honorific,$firstname,$lastname,$email,$street,$city,$state,$postcode,$country,$custom_field1,$custom_field2,$custom_field3,$custom_field4,$custom_field5,$custom_field6,$custom_field7,$email_optin,$date,$confirmation_code,$is_confirmed,$custom_message,$language,$IP_address,$anonymise";
-		$csv .= "\n";
+		fputcsv($csv, array(
+			$id, $petition_id, $honorific, $firstname, $lastname, $email, $street, $city, $state, $postcode, $country,
+			$custom_field1, $custom_field2, $custom_field3, $custom_field4, $custom_field5, $custom_field6, $custom_field7,
+			$email_optin, $date, $confirmation_code, $is_confirmed, $custom_message, $language, $IP_address, $anonymise
+		));
 
 		// construct CSV file data rows
 		foreach ( $csv_data as $signature ) {
-			
-			$csv .=  stripslashes('"' . 
-            trim($signature->id) . '","' .
-			trim($signature->petitions_id) . '","' . 
-			trim($signature->honorific) . '","' . 
-			trim($signature->first_name) . '","' . 
-			trim($signature->last_name) . $anonymise . '","' . 
-			trim($signature->email) . '","' . 
-			trim($signature->street_address) . '","' . 
-			trim($signature->city) . '","' . 
-			trim($signature->state) . '","' . 
-			trim($signature->postcode) . '","' . 
-			trim($signature->country) . '","' . 
-			trim($signature->custom_field) . '","' .
-            trim($signature->custom_field2) . '","' .
-			trim($signature->custom_field3) . '","' .
-            trim($signature->custom_field4) . '","' .
-            trim($signature->custom_field5) . '","' .
-            $signature->custom_field6 . '","' .
-            $signature->custom_field7 . '","' .
-			$signature->optin . '","' . 
-            trim($signature->date) . '","' . 
-			trim($signature->confirmation_code) . '","' .
-            trim($is_confirmed) . '","' .  		
-			trim($signature->custom_message) . '","' . 
-            trim($signature->language) . '","' . 
-			trim($signature->IP_address) . '"' );
-			$csv .= "\n";
+			fputcsv($csv, array(
+				trim($signature->id),
+				trim($signature->petitions_id),
+				trim($signature->honorific),
+				trim($signature->first_name),
+				trim($signature->last_name),
+				trim($signature->email),
+				trim($signature->street_address),
+				trim($signature->city),
+				trim($signature->state),
+				trim($signature->postcode),
+				trim($signature->country),
+				trim($signature->custom_field),
+				trim($signature->custom_field2),
+				trim($signature->custom_field3),
+				trim($signature->custom_field4),
+				trim($signature->custom_field5),
+				$signature->custom_field6,
+				$signature->custom_field7,
+				$signature->optin,
+				trim($signature->date),
+				trim($signature->confirmation_code),
+				trim($signature->is_confirmed),
+				trim($signature->custom_message),
+				trim($signature->language),
+				trim($signature->IP_address),
+				$signature->anonymise
+			));
 		}
 
-		// output CSV file in a UTF-8 format that Excel can understand
-		echo chr( 255 ) . chr( 254 ) . mb_convert_encoding( $csv, 'UTF-16LE', 'UTF-8' );
+		fclose($csv);
+
+		die();
+
+		
 	}		
 	ini_restore('max_execution_time'); // reset max_execution_time
 }

@@ -21,13 +21,23 @@ function dk_speakout_addnew_page() {
 	$petition->id = isset( $_REQUEST['id'] ) ? absint( sanitize_text_field($_REQUEST['id']) ) : '1';
 	$tab    = isset( $_REQUEST['tab'] ) ? sanitize_text_field($_REQUEST['tab']) : 'dk-petition-tab-01';
 	
+	if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
+		// security: ensure user has intention
+		if ( $action === 'update' ) {
+			check_admin_referer( 'dk_speakout-update_petition' . $petition->id );
+		} else {
+			check_admin_referer( 'dk_speakout-edit_petition' . $petition->id );
+		}
+	}
+
+	$page_title = '';
+	$message_update = '';
+	$nonce = '';
+
 	switch( $action ) {
 
 		// displays existing petition for alteration and submits with 'update' action
 		case 'edit' :
-			// security: ensure user has intention
-			//check_admin_referer( 'dk_speakout-edit_petition' . $petition->id );
-
 			$petition->retrieve( $petition->id );
 
 			// set up page display variables
@@ -43,9 +53,6 @@ function dk_speakout_addnew_page() {
 		
 		// alter an existing petition
 		case 'update' :
-			// security: ensure user has intention
-			check_admin_referer( 'dk_speakout-update_petition' . $petition->id );
-
 			$petition->populate_from_post();
 			$petition->update( $petition->id );
 			$wpml->register_petition( $petition );

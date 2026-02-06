@@ -31,11 +31,11 @@ jQuery( document ).ready( function( $ ) {
             custom_field5   = $( '#dk-speakout-custom-field5-' + id ).val(),
             custom_field6   = $( '#dk-speakout-custom-field6-' + id ).val(),
             custom_field7   = $( '#dk-speakout-custom-field7-' + id ).val(),
-			custom_message = $( '.dk-speakout-message-' + id ).val(),
-			optin          = '',
-			bcc            = '',
-            anonymise      = '',
-			privacypolicy  = $( '#dk-speakout-privacypolicy-' + id).is(':checked'),
+			custom_message  = $( '.dk-speakout-message-' + id ).val(),
+			optin           = 0,
+			bcc             = 0,
+            anonymise       = 0,
+			privacypolicy   = 0,
 			redirect_url   = $( '#dk-speakout-redirect-url-' + id).val(),
             redirect_delay   = $( '#dk-speakout-redirect-delay-' + id).val(),
             url_target       = $( '#dk-speakout-url-target-' + id).val(),
@@ -51,14 +51,20 @@ jQuery( document ).ready( function( $ ) {
 		}
 
 		if ( $( '#dk-speakout-optin-' + id ).prop( 'checked' ) ) {
-			optin = 'on';
+			optin = 1;
 		}
 		if ( $( '#dk-speakout-bcc-' + id ).prop( 'checked' ) ) {
-			bcc = 'on';
+			bcc = 1;
 		}
         if ( $( '#dk-speakout-anonymise-' + id ).prop( 'checked' ) ) {
-			anonymise = 'on';
-		}       
+			anonymise = 1;
+		}
+        if ( $( '#dk-speakout-privacypolicy-' + id ).prop( 'checked' ) ) {
+			privacypolicy = 1;
+		}
+        if ( $( '#dk-speakout-privacypolicy-' + id ).prop( 'checked' ) ) {
+			privacypolicy = 1;
+		}      
 
 		// make sure error notices are turned off before checking for new errors
 		$( '#dk-speakout-petition-' + id + ' input' ).removeClass( 'dk-speakout-error' );
@@ -103,7 +109,7 @@ jQuery( document ).ready( function( $ ) {
         }
 		
 		//test for required fields if set
-		if ( $('#dk-speakout-custom-field-'+ id).prop('required')  && custom_field === "") {
+		if ( $('#dk-speakout-custom-field-'+ id).prop('required')  && custom_field === "" ) {
             $( '#dk-speakout-custom-field-'  + id ).addClass( 'dk-speakout-error' ); 
 			errors ++;
 		}
@@ -159,6 +165,22 @@ jQuery( document ).ready( function( $ ) {
             $( '#dk-speakout-custom-field7-' + id ).removeClass( 'dk-speakout-error' );
         }
         
+        if ($('#dk-speakout-custom-field8-'+ id).prop('required')  && custom_field8 === "") {
+            $( '#dk-speakout-custom-field8-'  + id ).addClass( 'dk-speakout-error' ); 
+			errors ++;
+		}
+        else{
+            $( '#dk-speakout-custom-field8-' + id ).removeClass( 'dk-speakout-error' );
+        }
+        
+        if ($('#dk-speakout-custom-field9-'+ id).prop('required')  && custom_field9 === "") {
+            $( '#dk-speakout-custom-field9-'  + id ).addClass( 'dk-speakout-error' ); 
+			errors ++;
+		}
+        else{
+            $( '#dk-speakout-custom-field9-' + id ).removeClass( 'dk-speakout-error' );
+        }
+        
 		if (document.getElementById('dk-speakout-street-' + id) && $( '#dk-speakout-street-'  + id ).prop('required') && street === "") {
             $( '#dk-speakout-street-'  + id ).addClass( 'dk-speakout-error' ); 
 			errors ++;
@@ -205,8 +227,10 @@ jQuery( document ).ready( function( $ ) {
 			// set rel to disabled as flag to block double clicks
 			$( this ).attr( 'rel', 'disabled' );
 
+			var form = $( this ).closest( 'form' );
 			var data = {
 				action:         'dk_speakout_sendmail',
+				security:       form.find( '#security' ).val(),
 				id:             id,
 				honorific:		honorific,
 				first_name:     firstname,
@@ -224,6 +248,8 @@ jQuery( document ).ready( function( $ ) {
                 custom_field5:   custom_field5,
                 custom_field6:   custom_field6,
                 custom_field7:   custom_field7,
+                custom_field8:   custom_field8,
+                custom_field9:   custom_field9,
 				custom_message: custom_message,
 				optin:          optin,
 				bcc:            bcc,

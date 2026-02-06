@@ -1,3 +1,8 @@
+<?php
+$table_label = '';
+$message_update = '';
+$count = 0;
+?>
 <div class="wrap" id="dk-speakout">
 
 	<div id="icon-dk-speakout" class="icon32"><br /></div>
@@ -489,10 +494,10 @@
 				
 			<tr class="dk-speakout-tablerow">
 			    <td width="5px"><input type="checkbox" name="signature[]" id="dk-speakout-signature-<?php echo abs( $signature->id );  ?> " class="dk-speakout-signaturecheck" value="<?php echo $signature->id;  ?>" ></td>
-				<td class="dk-speakout-right"><?php echo number_format( $current_row, 0, '.', ',' ); ?></td>
+				<td class="dk-speakout-right"></td>
 				<?php // if anonymous, tag name
 				    $anonymous = $signature->anonymise == 1 ?'<sup>&#9830;</sup>' : "";
-				    $foundanon = true;
+				    if($anonymous > ""){ $foundanon = true;}
 				?>
 				<td style="white-space:nowrap"><?php echo esc_html( $honorificdisplay . $signature->first_name . ' ' . $signature->last_name ) . $anonymous ; ?></td>
 				<?php
