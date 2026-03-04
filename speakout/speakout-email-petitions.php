@@ -15,7 +15,7 @@ Requires PHP: 7.4
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Version: 4.6.5
+Version: 4.6.5.1
 
 {Plugin Name} is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ For the full text of the GNU General Public License see {License URI}.
 */
 
 global $wpdb, $db_petitions, $db_signatures, $dk_speakout_version;
-$dk_speakout_version = '4.6.5';
+$dk_speakout_version = '4.6.5.1';
 $db_petitions  = $wpdb->prefix . 'dk_speakout_petitions';
 $db_signatures = $wpdb->prefix . 'dk_speakout_signatures';
 

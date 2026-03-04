@@ -184,19 +184,16 @@ class dk_speakout_Signature
 	{
 		global $wpdb, $db_signatures;
 
-		$sql = "
-			SELECT id
-			FROM $db_signatures
-			WHERE `confirmation_code` = '$confirmation_code' AND `is_confirmed` = 1
-		";
-		$query_results = $wpdb->get_row( $sql );
-
-		if ( $wpdb->num_rows > 0 ) {
-			return true;
-		}
-		else {
+		$conf_code = sanitize_key($confirmation_code);
+		if (empty($conf_code)){
 			return false;
 		}
+		$wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT id FROM $db_signatures WHERE `confirmation_code` = %s AND `is_confirmed` = 1", $conf_code)
+		);
+
+		return ($wpdb->num_rows > 0);
 	}
 
 	/**
@@ -210,16 +207,15 @@ class dk_speakout_Signature
 		global $wpdb, $db_signatures;
 
 		$data  = array( 'is_confirmed' => 1 );
-		$where = array( 'confirmation_code' => $confirmation_code );
-
-		$rows_affected = $wpdb->update( $db_signatures, $data, $where );
-
-		if ( $rows_affected > 0 ) {
-			return true;
-		}
-		else {
+		$conf_code = sanitize_key($confirmation_code);
+		if (empty($conf_code)){
 			return false;
 		}
+		$where = array( 'confirmation_code' => $conf_code );
+
+		$rows_affected = $wpdb->update( $db_signatures, $data, $where );
+		return ($rows_affected > 0);
+
 	}
 
 	/**

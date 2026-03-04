@@ -9,6 +9,12 @@ if ( isset( $_REQUEST['dkspeakoutconfirm'] ) ) {
 	add_action( 'template_redirect', 'dk_speakout_confirm_email' );
 }
 
+function _fail_early() {
+    $message = __( 'The confirmation code you provided is invalid.', 'speakout' );
+    echo $message;
+    die;
+}
+
 /**
  * Displays the confirmation page
  */
@@ -27,11 +33,16 @@ function dk_speakout_confirm_email() {
 	$options = get_option( 'dk_speakout_options' );
 	$wpml          = new dk_speakout_WPML();
 
-	// get the confirmation code from url
-	$confirmation_code = sanitize_text_field( wp_unslash( $_REQUEST['dkspeakoutconfirm'] ) );
-
-	// try to confirm the signature
-	$try_confirm = $the_signature->confirm( $confirmation_code );
+    // get the confirmation code from url
+    $confirmation_code = isset($_REQUEST['dkspeakoutconfirm'])
+        ? sanitize_key(wp_unslash($_REQUEST['dkspeakoutconfirm'])) : '';
+    if (empty( $confirmation_code )) {
+        _fail_early();
+    }
+    $try_confirm = $the_signature->confirm( $confirmation_code );
+    if (!( $try_confirm )) {
+        _fail_early();
+    }
 
 	// retrieve the petition data
     $the_petition->retrieve( $the_signature->petitions_id );
